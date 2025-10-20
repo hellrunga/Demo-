@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KI Chatbot Demos | DeinBot.ai</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    header {
+      width: 100%;
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #00d8ff;
+    }
+    header p {
+      margin-top: 1rem;
+      font-size: 1.1rem;
+      color: #a0b0c0;
+    }
+    .chat-container {
+      width: 100%;
+      max-width: 420px;
+      background: #111a1f;
+      border-radius: 16px;
+      padding: 1rem;
+      box-shadow: 0 0 30px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      height: 600px;
+      overflow: hidden;
+    }
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.5rem;
+    }
+    .message {
+      margin: 0.5rem 0;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      max-width: 85%;
+      line-height: 1.4;
+    }
+    .user {
+      background: #00d8ff;
+      color: #000;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .bot {
+      background: #24343d;
+      color: #fff;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+    .input-area {
+      display: flex;
+      margin-top: 0.5rem;
+    }
+    input {
+      flex: 1;
+      border: none;
+      padding: 0.8rem;
+      border-radius: 8px;
+      background: #1b2a30;
+      color: #fff;
+      font-size: 1rem;
+    }
+    button {
+      margin-left: 0.5rem;
+      background: #00d8ff;
+      color: #000;
+      border: none;
+      padding: 0.8rem 1.2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+    button:hover {
+      background: #06b3d6;
+    }
+    footer {
+      margin-top: auto;
+      padding: 1.5rem;
+      font-size: 0.9rem;
+      color: #8aa0aa;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Dein KI Chatbot – Demo</h1>
+    <p>Teste hier, wie dein eigener Chatbot aussehen könnte. 🚀</p>
+  </header>
+
+  <div class="chat-container">
+    <div class="chat-messages" id="chat"></div>
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Nachricht eingeben..." />
+      <button id="sendBtn">Senden</button>
+    </div>
+  </div>
+
+  <footer>
+    © 2025 DeinBot.ai – KI-Chatbots für Websites  
+  </footer>
+
+  <script>
+    const chat = document.getElementById('chat');
+    const input = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    const fakeResponses = [
+      "Ich bin dein digitaler Assistent, wie kann ich helfen?",
+      "Spannend! Erzähl mir mehr darüber.",
+      "Klingt interessant – was genau meinst du damit?",
+      "Ich kann dir gerne dabei helfen, deinen eigenen Chatbot zu bauen!",
+      "Das ist eine gute Frage. Was wäre dein Ziel dabei?",
+      "Lass uns das gemeinsam herausfinden!"
+    ];
+
+    function addMessage(text, sender) {
+      const msg = document.createElement('div');
+      msg.classList.add('message', sender);
+      msg.textContent = text;
+      chat.appendChild(msg);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function botReply() {
+      const reply = fakeResponses[Math.floor(Math.random() * fakeResponses.length)];
+      setTimeout(() => addMessage(reply, 'bot'), 600);
+    }
+
+    sendBtn.addEventListener('click', () => {
+      const text = input.value.trim();
+      if (!text) return;
+      addMessage(text, 'user');
+      input.value = '';
+      botReply();
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendBtn.click();
+    });
+  </script>
+</body>
+</html>
