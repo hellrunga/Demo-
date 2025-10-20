@@ -3,19 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Automatischer Chatbot Generator | DeinBot.ai</title>
+  <title>Individueller KI-Chatbot Generator | Zipfelmutz</title>
   <style>
     body { font-family: 'Inter', sans-serif; background: #0f2027; color: #fff; display: flex; flex-direction: column; align-items: center; padding: 2rem; }
-    h1 { color: #00d8ff; }
+    h1 { color: #00d8ff; text-align: center; }
     input, select, button, textarea { padding: 0.8rem; margin: 0.5rem 0; border-radius: 8px; border: none; width: 100%; max-width: 480px; font-size: 1rem; }
     button { background: #00d8ff; color: #000; cursor: pointer; font-weight: 600; }
     button:hover { background: #06b3d6; }
-    textarea { height: 200px; background: #111a1f; color: #fff; }
+    textarea { height: 200px; background: #111a1f; color: #fff; display: none; }
     label { display: block; margin-top: 1rem; font-weight: 500; }
+    .gumroad-button { display: inline-block; margin-top: 1rem; padding: 0.8rem 1.5rem; background: #ff8c00; color: #000; font-weight: 600; border-radius: 8px; text-decoration: none; cursor: pointer; }
+    .gumroad-button:hover { background: #ffaa33; }
   </style>
 </head>
 <body>
-  <h1>Automatischer Chatbot Generator</h1>
+  <h1>Automatischer KI-Chatbot Generator</h1>
+  <p>Gib Thema & Sprache ein, zahle einmal, und dein Chatbot-Snippet erscheint automatisch.</p>
 
   <label for="topic">Thema / Bot-Persona:</label>
   <input type="text" id="topic" placeholder="z.B. Kundenservice, Reiseberater, Fitness-Coach">
@@ -27,52 +30,53 @@
     <option value="multi">Mehrsprachig</option>
   </select>
 
-  <button id="generateBtn">Chatbot generieren</button>
+  <!-- Gumroad Button -->
+  <a class="gumroad-button" href="https://zipfelmutz.gumroad.com/l/zioxbi" target="_blank">Jetzt kaufen</a>
 
   <label for="snippet">JavaScript-Snippet für deine Website:</label>
-  <textarea id="snippet" readonly placeholder="Hier erscheint dein Snippet..."></textarea>
+  <textarea id="snippet" readonly placeholder="Hier erscheint dein Chatbot-Snippet nach Zahlung..."></textarea>
 
+  <script src="https://gumroad.com/js/gumroad.js"></script>
   <script>
-    const generateBtn = document.getElementById('generateBtn');
+    const snippetArea = document.getElementById('snippet');
     const topicInput = document.getElementById('topic');
     const langSelect = document.getElementById('lang');
-    const snippetArea = document.getElementById('snippet');
 
     // Dein OpenRouter API-Key
     const API_KEY = "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";
     const API_URL = "https://openrouter.ai/api/v1/chat/completions";
 
-    generateBtn.addEventListener('click', async () => {
-      const topic = topicInput.value.trim();
-      const lang = langSelect.value;
-      if(!topic) { alert("Bitte gib ein Thema ein."); return; }
-
-      snippetArea.value = "Generiere deinen Bot… bitte warten…";
-
-      const systemPrompt = `Erstelle einen fertigen JavaScript-Chatbot für das Thema: "${topic}". Sprache: ${lang}. Der Chatbot soll direkt auf einer Website eingebaut werden können und Nutzerfragen beantworten.`;
-
+    async function generateBot(topic, lang) {
+      const systemPrompt = `Erstelle einen fertigen JavaScript-Chatbot für das Thema: "${topic}". Sprache: ${lang}. Der Chatbot soll direkt auf einer Website einsetzbar sein.`;
       try {
         const response = await fetch(API_URL, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${API_KEY}`,
-          },
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEY}` },
           body: JSON.stringify({
             model: "gpt-3.5-turbo",
-            messages: [
-              { role: "system", content: systemPrompt }
-            ]
+            messages: [{ role: "system", content: systemPrompt }]
           })
         });
-
         const data = await response.json();
-        const botCode = data.choices?.[0]?.message?.content || "Fehler: Keine Antwort von der KI";
-        snippetArea.value = botCode;
-
+        return data.choices?.[0]?.message?.content || "Fehler: Keine Antwort von der KI.";
       } catch (error) {
         console.error(error);
-        snippetArea.value = "Fehler beim Verbinden zur KI.";
+        return "Fehler beim Verbinden zur KI.";
+      }
+    }
+
+    // Gumroad Callback für Kaufabschluss
+    window.addEventListener('message', async (e) => {
+      if (e.origin !== "https://gumroad.com") return;
+      if (e.data.event === "purchase-completed") {
+        const topic = topicInput.value.trim();
+        const lang = langSelect.value;
+        if(!topic) { alert("Bitte gib ein Thema ein."); return; }
+        snippetArea.style.display = "block";
+        snippetArea.value = "Generiere deinen Chatbot… bitte warten…";
+        const botCode = await generateBot(topic, lang);
+        snippetArea.value = botCode;
+        alert("Dein individueller Chatbot ist jetzt bereit! 🎉");
       }
     });
   </script>
